@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>iw4.st - Restriction of Access Request</title>
+  <style>
+    body {
+      background: #232430;
+      color: #FFF;
+      font-family: "Arimo", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 90vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 48px;
+      margin-bottom: 16px;
+      color: #FF5A1E;
+    }
+    h2 {
+      font-size: 22px;
+      margin-bottom: 12px;
+      color: #D9D9D5;
+    }
+    p {
+      font-size: 14px;
+      color: #D9D9D5;
+      max-width: 600px;
+      line-height: 1.5;
+      margin: 10px 0;
+    }
+    a {
+      color: #FF5A1E;
+      text-decoration: none;
+    }
+
+    .note {
+      background: rgba(255, 90, 30, 0.1);
+      border-left: 3px solid #FF5A1E;
+      padding: 15px;
+      margin: 20px 0;
+      text-align: left;
+      max-width: 600px;
+    }
+
+    .form-container {
+      background: #232430;
+      padding: 12px;
+      border-radius: 4px;
+      box-shadow: 0 -1px 8px rgba(0,0,0,.6);
+      max-width: 680px;
+      width: 100%;
+      height: 230px;
+      margin: 10px 0;
+      position: relative;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+
+    .form-group {
+      flex: 1;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #D9D9D5;
+    }
+
+    .form-group select,
+    .form-group input {
+      width: 94%;
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      background: #39374A;
+      color: #fff;
+    }
+
+    .form-group select {
+      height: 33px;
+    }
+
+    .form-input {
+      width: 97%;
+      height: 120px;
+      margin-top: 0px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      background: #39374A;
+      text-align: left;
+    }
+
+    input[type=text], textarea {
+      border-style: inset;
+      border-width: 0px;
+      padding-left: 4px,4px;
+      margin-bottom: 8px;
+      margin-top: 6px;
+      padding-top: 10px;
+    }
+
+    textarea { 
+      font-family: "Arimo", sans-serif; 
+      font-size: 14px;
+      color: #fff;
+      text-align: left;
+      background: #39374A;
+      padding: 10px;
+      width: 658px;
+      height: 130px;
+      resize: none;
+      box-shadow: 0 -1px 8px rgba(0,0,0,.6);
+    }
+
+    textarea::placeholder {
+      font-size: 14px;
+      color: #bbb;
+      opacity: 0.6;
+    }
+
+    .required {
+      color: #FF5A1E;
+    }
+
+    .btn-group {
+      width: 23%;
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .btn-group button {
+      flex: 1;
+      min-width: 0;
+      padding: 6px 0;
+      background: #79758E;
+      color: #D9D9D5;
+      border: none;
+      border-radius: 5px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 1px 3px 6px rgba(0,0,0,.4);
+    }
+
+    .btn-group button:hover {
+      background: #FF5A1E;
+    }
+
+    .info-tooltip {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      font-size: 10px;
+      color: #D9D9D5;
+      cursor: default;
+      user-select: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background-color: #79758E;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 1px 3px 6px rgba(0,0,0,.4);
+      transition: .2s;
+    }
+
+    .info-tooltip-content {
+      visibility: hidden;
+      width: 465px;
+      background-color: #39374A;
+      color: #D9D9D5;
+      text-align: center;
+      border-radius: 5px;
+      padding: 9px;
+      position: absolute;
+      z-index: 1;
+      bottom: 0;
+      opacity: 0;
+      transition: .3s;
+      right: calc(100% + 15px);
+      font-size: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,.5);
+      border: .75px solid #555;
+    }
+
+    .info-tooltip:hover {
+      background: #FF5A1E;
+    }
+
+    .info-tooltip:hover .info-tooltip-content {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #D9D9D5;
+      text-align: center;
+      border-top: 1px solid #404452;
+      padding-top: 20px;
+      max-width: 600px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1><a href="/">iw4.st</a></h1>
+  <h2>Restriction of Access Request</h2>
+
+  <p>Fill out the form below to request blocking of illegal, copyrighted or other objectionable content from availability via our proxy service.</p> 
+  <div style="font-size: 18px">
+    <strong><br>This does not remove the content from the file host</strong>
+  </div><br>
+  <p style="font-size: 10px">(The file will still be available where it is <em>actually hosted</em>. We cannot control what is posted to any third party site)</p>
+  <br>
+
+  <form class="form-container" id="block-form">
+    <div class="form-row">
+      <div class="form-group">
+        <select id="reason-select" name="reason-select" required>
+          <option value="">Select a reason</option>
+          <option value="dmca">DMCA/Copyright</option>
+          <option value="objectionable">Objectionable Content</option>
+          <option value="urgent">Urgent+Objectionable (e.g. terrorism, child exploitation)</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <input type="email" id="contact" name="contact" placeholder="Contact email (optional)">
+      </div>
+    </div>
+
+    <textarea class="form-input" name="description" 
+    placeholder="Give a description of the content here (if encrypted, provide key/password)
+
+To help prevent further misuse of the service, please include the web page/app/social media profile that the 'entry URL' was found. 
+
+We strive for total legal compliance and will actively attempt to remove our presence from sites using our service maliciously" required></textarea>
+
+  <div class="btn-group">
+    <button type="submit">Submit</button>
+  </div>
+
+  <div id="form-message" style="margin-top: 10px; color: #FF5A1E;"></div>
+
+  <div class="info-tooltip">?
+    <div class="info-tooltip-content">
+      If you include an email address, we aim to respond to your request within 48hours<br>
+      <br>All <em>provably</em> illegal content will be routed 
+      to an error page instead of a download URL<br> 
+      <br>Therefore, the file will be innaccessible via our proxy.<br>
+      <br><br>
+      <strong>Restricted content will always still be available at the origin site.<br>
+        We do not control or store any files ourselves</strong>
+        <br><br>
+        <br>Approach the file host(s) we proxy for actual deletion of content.<br>
+        Nothing is hosted here. <strong>We are just a bridge</strong> to a few popular file hosts. <br><br>
+        The 'Restriction of Access Request' form is offered as a "courtesy, good faith gesture" only. 
+        We do not assume any responsibility over any files or any legal implications in distributing them, when complying with (or denying) requests.
+        <br>
+    </div>
+  </div>
+</form>
+
+<div class="footer">
+  <p>Service Status: Operational | Domain: iw4.st | Updated: December 11, 2025</p>
+  <p>This page serves as our technical and legal disclosure.</p>
+</div>
+
+<script>
+  document.getElementById('block-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const messageDiv = document.getElementById('form-message');
+    const formData = new FormData(e.target);
+    const data = {
+      reason: formData.get('reason-select'),
+      contact: formData.get('contact'),
+      description: formData.get('description')
+    };
+
+    try {
+      const response = await fetch('https://iw4.st/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        messageDiv.innerHTML = '<strong>Request submitted successfully</strong>';
+        messageDiv.style.color = '#FF5A1E'; 
+        messageDiv.style.padding = '8px';
+        messageDiv.style.marginTop = '10px';
+        messageDiv.style.background = 'rgba(255, 90, 30, 0.1)';
+        messageDiv.style.borderRadius = '4px';
+        e.target.reset();
+      } else {
+        messageDiv.textContent = 'Error submitting request';
+      }
+    } catch (error) {
+      messageDiv.textContent = 'Network error - please try again';
+    }
+  });
+</script>
+</body>
+</html>

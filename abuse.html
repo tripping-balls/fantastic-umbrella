@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>iw4.st - Restriction of Access Request</title>
+  <title>Request - iw4.st</title>
   <style>
     body {
       background: #232430;
@@ -221,6 +221,43 @@
       max-width: 600px;
       width: 100%;
     }
+/* form message */
+#form-message {
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+#form-message.visible {
+  opacity: 1;
+}
+
+#form-message.success {
+  color: #4caf50;
+  padding: 8px;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 4px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #FF5A1E;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: none;          
+  margin-left: 6px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+    
   </style>
 </head>
 <body>
@@ -257,9 +294,10 @@ To help prevent further misuse of the service, please include the web page/app/s
 
 We strive for total legal compliance and will actively attempt to remove our presence from sites using our service maliciously" required></textarea>
 
-  <div class="btn-group">
-    <button type="submit">Submit</button>
-  </div>
+<div class="btn-group">
+  <button type="submit" id="submit-btn">Submit</button>
+  <div id="submit-spinner" class="spinner" aria-hidden="true"></div>
+</div>
 
   <div id="form-message" style="margin-top: 10px; color: #FF5A1E;"></div>
 
@@ -283,15 +321,28 @@ We strive for total legal compliance and will actively attempt to remove our pre
 </form>
 
 <div class="footer">
-  <p>Service Status: Operational | Domain: iw4.st | Updated: December 11, 2025</p>
+  <p>Service Status: Operational | Domain: iw4.st | Updated: December 17, 2025</p>
   <p>This page serves as our technical and legal disclosure.</p>
 </div>
 
 <script>
   document.getElementById('block-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+
     const messageDiv = document.getElementById('form-message');
-    const formData = new FormData(e.target);
+    const form = e.target;
+    const submitBtn = document.getElementById('submit-btn');
+    const spinner = document.getElementById('submit-spinner');
+
+    messageDiv.className = '';
+    messageDiv.textContent = '';
+    messageDiv.style.display = 'block';
+    void messageDiv.offsetWidth;
+
+    submitBtn.disabled = true;
+    spinner.style.display = 'inline-block';
+
+    const formData = new FormData(form);
     const data = {
       reason: formData.get('reason-select'),
       contact: formData.get('contact'),
@@ -306,20 +357,36 @@ We strive for total legal compliance and will actively attempt to remove our pre
       });
 
       if (response.ok) {
-        messageDiv.innerHTML = '<strong>Request submitted successfully</strong>';
-        messageDiv.style.color = '#FF5A1E'; 
-        messageDiv.style.padding = '8px';
-        messageDiv.style.marginTop = '10px';
-        messageDiv.style.background = 'rgba(255, 90, 30, 0.1)';
-        messageDiv.style.borderRadius = '4px';
-        e.target.reset();
+        const resJson = await response.json();
+        const incidentId = resJson.incidentId || 'unknown';
+
+        messageDiv.innerHTML = `<strong>Request submitted successfully.</strong><br>Incident ID: <code>${incidentId}</code>`;
+        messageDiv.classList.add('success', 'visible');
+
+        form.reset();
+
+        setTimeout(() => {
+          messageDiv.classList.remove('visible');
+          setTimeout(() => {
+            messageDiv.style.display = 'none';
+          }, 700);
+        }, 5000);
       } else {
         messageDiv.textContent = 'Error submitting request';
+        messageDiv.style.color = '#FF5A1E';
+        messageDiv.classList.add('visible');
       }
     } catch (error) {
       messageDiv.textContent = 'Network error - please try again';
+      messageDiv.style.color = '#FF5A1E';
+      messageDiv.classList.add('visible');
+    } finally {
+      submitBtn.disabled = false;
+      spinner.style.display = 'none';
     }
   });
 </script>
+
+
 </body>
 </html>

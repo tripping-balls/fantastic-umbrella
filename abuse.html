@@ -272,7 +272,11 @@ shared using our secure access tokens.</p>
     We only have the power to block secure access tokens from resolving to the direct link.</p>
   <br>
   
-  <form class="form-container" id="block-form" netlify>
+  <form class="form-container" id="block-form" name="abuse-report" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+    <input type="hidden" name="form-name" value="abuse-report">
+    <p hidden>
+      <label>Don’t fill this out: <input name="bot-field"></label>
+    </p>
     <div class="form-row">
       <div class="form-group">
         <select id="reason-select" name="reason-select" required>
@@ -317,69 +321,62 @@ Please include the source site (where the 'entry URL' was found)" required></tex
   </div>
   <p style="font-size: 10px; margin-top: 5px;">
     URGENT INQUIRIES: <a href="mailto:admin@iw4.st">Contact</a>
-    
-    <script>
-      document.getElementById('block-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const messageDiv = document.getElementById('form-message');
-        const form = e.target;
-        const submitBtn = document.getElementById('submit-btn');
-        const spinner = document.getElementById('submit-spinner');
-        
-        messageDiv.className = '';
-        messageDiv.textContent = '';
-        messageDiv.style.display = 'block';
-        void messageDiv.offsetWidth;
-        
-        submitBtn.disabled = true;
-        spinner.style.display = 'inline-block';
-        
-        const formData = new FormData(form);
-        const data = {
-          reason: formData.get('reason-select'),
-          contact: formData.get('contact'),
-          description: formData.get('description')
-        };
-        
-        try {
-          const response = await fetch('https://iw4.st/api/contact', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-          });
-          
-          if (response.ok) {
-            const resJson = await response.json();
-            const incidentId = resJson.incidentId || 'unknown';
-            
-            messageDiv.innerHTML = `<strong>Request submitted successfully.</strong><br>Incident ID: <code>${incidentId}</code>`;
-            messageDiv.classList.add('success', 'visible');
-            
-            form.reset();
-            
+  </p>
+
+  <script>
+    document.getElementById('block-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const messageDiv = document.getElementById('form-message');
+      const form = e.target;
+      const submitBtn = document.getElementById('submit-btn');
+      const spinner = document.getElementById('submit-spinner');
+
+      messageDiv.className = '';
+      messageDiv.textContent = '';
+      messageDiv.style.display = 'block';
+      void messageDiv.offsetWidth;
+
+      submitBtn.disabled = true;
+      spinner.style.display = 'inline-block';
+
+      const formData = new FormData(form);
+      const encoded = new URLSearchParams([...formData.entries()]).toString();
+
+      try {
+        const response = await fetch(form.getAttribute('action') || '/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: encoded
+        });
+
+        if (response.ok) {
+          messageDiv.innerHTML = `<strong>Request submitted successfully.</strong><br>Thank you — this report was received.`;
+          messageDiv.classList.add('success', 'visible');
+
+          form.reset();
+
+          setTimeout(() => {
+            messageDiv.classList.remove('visible');
             setTimeout(() => {
-              messageDiv.classList.remove('visible');
-              setTimeout(() => {
-                messageDiv.style.display = 'none';
-              }, 700);
-            }, 5000);
-          } else {
-            messageDiv.textContent = 'Error submitting request';
-            messageDiv.style.color = '#FF5A1E';
-            messageDiv.classList.add('visible');
-          }
-        } catch (error) {
-          messageDiv.textContent = 'Network error - please try again';
+              messageDiv.style.display = 'none';
+            }, 700);
+          }, 5000);
+        } else {
+          messageDiv.textContent = 'Error submitting request';
           messageDiv.style.color = '#FF5A1E';
           messageDiv.classList.add('visible');
-        } finally {
-          submitBtn.disabled = false;
-          spinner.style.display = 'none';
         }
-      });
-    </script>
-    
-    
+      } catch (error) {
+        messageDiv.textContent = 'Network error - please try again';
+        messageDiv.style.color = '#FF5A1E';
+        messageDiv.classList.add('visible');
+      } finally {
+        submitBtn.disabled = false;
+        spinner.style.display = 'none';
+      }
+    });
+  </script>
+
   </body>
   </html>

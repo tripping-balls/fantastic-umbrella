@@ -272,11 +272,8 @@ shared using our secure access tokens.</p>
     We only have the power to block secure access tokens from resolving to the direct link.</p>
   <br>
   
-  <form class="form-container" id="block-form" name="abuse-report" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-    <input type="hidden" name="form-name" value="abuse-report">
-    <p hidden>
-      <label>Don’t fill this out: <input name="bot-field"></label>
-    </p>
+  <form class="form-container" id="block-form" name="abuse-report" method="POST"  action="https://formspree.io/f/xgoealkz">
+    
     <div class="form-row">
       <div class="form-group">
         <select id="reason-select" name="reason-select" required>
@@ -346,7 +343,10 @@ Please include the source site (where the 'entry URL' was found)" required></tex
       try {
         const response = await fetch(form.getAttribute('action') || '/', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json'
+          },
           body: encoded
         });
 

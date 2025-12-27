@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Report Portal - iw4.st</title>
+  <!-- hCaptcha Script -->
+  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
   <style>
     body {
       background: #232430;
@@ -55,9 +57,13 @@
       box-shadow: 0 -1px 8px rgba(0,0,0,.6);
       max-width: 680px;
       width: 100%;
-      height: 230px;
+      /* Changed from fixed height to auto to accommodate captcha */
+      height: auto;
+      min-height: 230px;
       margin: 10px 0;
       position: relative;
+      /* Add some bottom padding for the new content */
+      padding-bottom: 20px;
     }
     
     .form-row {
@@ -136,6 +142,13 @@
       color: #FF5A1E;
     }
     
+    /* Container for the captcha to center it or align it */
+    .captcha-container {
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: flex-start;
+    }
+
     .btn-group {
       width: 23%;
       display: flex;
@@ -294,6 +307,11 @@ shared using our secure access tokens.</p>
 
 Please include the source site (where the 'entry URL' was found)" required></textarea>
     
+    <!-- hCaptcha Widget -->
+    <div class="captcha-container">
+        <div class="h-captcha" data-sitekey="89b6ea14-3a18-4b8c-970a-6a581b5c5938" data-theme="dark"></div>
+    </div>
+
     <div class="btn-group">
       <button type="submit" id="submit-btn">Submit</button>
       <div id="submit-spinner" class="spinner" aria-hidden="true"></div>
@@ -334,6 +352,15 @@ Please include the source site (where the 'entry URL' was found)" required></tex
       messageDiv.style.display = 'block';
       void messageDiv.offsetWidth;
 
+      // Check hCaptcha
+      const hcaptchaVal = hcaptcha.getResponse();
+      if (!hcaptchaVal) {
+        messageDiv.textContent = 'Please complete the captcha verification.';
+        messageDiv.style.color = '#FF5A1E';
+        messageDiv.classList.add('visible');
+        return;
+      }
+
       submitBtn.disabled = true;
       spinner.style.display = 'inline-block';
 
@@ -355,6 +382,7 @@ Please include the source site (where the 'entry URL' was found)" required></tex
           messageDiv.classList.add('success', 'visible');
 
           form.reset();
+          hcaptcha.reset();
 
           setTimeout(() => {
             messageDiv.classList.remove('visible');
@@ -363,14 +391,22 @@ Please include the source site (where the 'entry URL' was found)" required></tex
             }, 700);
           }, 5000);
         } else {
-          messageDiv.textContent = 'Error submitting request';
+          const data = await response.json().catch(() => ({}));
+          
+          if (data.errors && data.errors.length > 0) {
+             messageDiv.textContent = data.errors.map(err => err.message).join(", ");
+          } else {
+             messageDiv.textContent = 'Error submitting request';
+          }
           messageDiv.style.color = '#FF5A1E';
           messageDiv.classList.add('visible');
+          hcaptcha.reset();
         }
       } catch (error) {
         messageDiv.textContent = 'Network error - please try again';
         messageDiv.style.color = '#FF5A1E';
         messageDiv.classList.add('visible');
+        hcaptcha.reset();
       } finally {
         submitBtn.disabled = false;
         spinner.style.display = 'none';
